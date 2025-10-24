@@ -19,9 +19,4 @@ PROCESSED_TEST_DATA_PATH = os.path.join(PROCESSED_DIR, "processed_test.csv")
 
 # # Model Training
 
-# MODEL_OUTPUT_PATH = "artifacts/models/lgbm_model.pkl"
-
-
-# # Preprocessor 
-
-# ENCODED_FEATURES_MODEL_PATH = 'artifacts/models/preprocessor.pkl'
+ENCODER_OUTPUT_PATH = "artifacts/models/label_encoders.pkl"

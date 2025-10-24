@@ -3,26 +3,29 @@ data_ingestion:
 
 data_processing:
   categorical_columns:
-    - Order_Date
-    - Order_Time
-    - Pickup_Time
-    - Weather
-    - Traffic
-    - Vehicle
-    - Area
-    - Category
-    - DayOfWeek
+  - channel_name
+  - category
+  - Sub-category
+  - Customer Remarks
+  - order_date_time
+  - Issue_reported at
+  - issue_responded'
+  - Survey_response_Date
+  - Customer_City
+  - Product_category
+  - Agent_name
+  - Supervisor
+  - Manager
+  - Agent Shift
 
   numerical_columns:
-    - Agent_Age
-    - Agent_Rating
-    - Store_Latitude
-    - Store_Longitude
-    - Drop_Latitude
-    - Drop_Longitude
-    - Delivery_Time
-    - Distance_km
-    - Order_Hour
-    - Day_Of_Week
-    - Pickup_Delay
+  - Item_price
+  - Tenure Bucket
+  - CSAT Score
+  - missing_order_time
+  - missing_report_time
+  - missing_response_time
+  - response_time_hours
+  - order_to_issue_hours
+  - survey_delay_hours
    
