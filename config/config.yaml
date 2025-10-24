@@ -1,0 +1,28 @@
+data_ingestion:
+  train_ratio : 0.8
+
+data_processing:
+  categorical_columns:
+    - Order_Date
+    - Order_Time
+    - Pickup_Time
+    - Weather
+    - Traffic
+    - Vehicle
+    - Area
+    - Category
+    - DayOfWeek
+
+  numerical_columns:
+    - Agent_Age
+    - Agent_Rating
+    - Store_Latitude
+    - Store_Longitude
+    - Drop_Latitude
+    - Drop_Longitude
+    - Delivery_Time
+    - Distance_km
+    - Order_Hour
+    - Day_Of_Week
+    - Pickup_Delay
+   

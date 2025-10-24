@@ -6,3 +6,5 @@ tensorflow
 mlflow
 fastapi
 streamlit
+tensorflow 
+imbalanced-learn
