@@ -8,12 +8,11 @@ from config.paths_config import *
 
 if __name__ == '__main__':
 
-    ingest = DataIngestion(read_yaml(CONFIG_PATH))
-    ingest.run()
-
+    # ingest = DataIngestion(read_yaml(CONFIG_PATH))
+    # ingest.run()
 
     processor = DataProcessor(TRAIN_FILE_PATH, TEST_FILE_PATH, PROCESSED_DIR)
-    processor.process()
+    processor.process(PROCESSED_TRAIN_DATA_PATH, PROCESSED_TEST_DATA_PATH, ENCODER_OUTPUT_PATH)
 
     trainer = ModelTraining(PROCESSED_TRAIN_DATA_PATH, PROCESSED_TEST_DATA_PATH, MODEL_OUTPUT_PATH)
     trainer.run()

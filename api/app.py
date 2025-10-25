@@ -6,14 +6,8 @@ import pickle
 import pandas as pd
 from config.paths_config import *
 
-# ----------------------------
-# Initialize FastAPI app
-# ----------------------------
 app = FastAPI(title="CSAT Prediction API", version="1.0")
 
-# ----------------------------
-# Load model and preprocessing
-# ----------------------------
 MODEL_PATH = MODEL_OUTPUT_PATH
 SCALER_PATH = SCALER_PATH
 ENCODER_PATH = ENCODER_OUTPUT_PATH
@@ -27,33 +21,71 @@ try:
 except Exception as e:
     raise RuntimeError(f"Error loading model or preprocessors: {e}")
 
-# ----------------------------
-# Request and Response Schemas
-# ----------------------------
+CATEGORICAL_FEATURES = [
+    "channel_name",
+    "category",
+    "Sub-category",
+    "Customer Remarks",
+    "Customer_City",
+    "Product_category",
+    "Agent_name",
+    "Supervisor",
+    "Manager",
+    "Agent Shift"
+]
+
+ALL_FEATURES_ORDER = [
+    "channel_name",
+    "category",
+    "Sub-category",
+    "Customer Remarks",
+    "Customer_City",
+    "Product_category",
+    "Item_price",
+    "connected_handling_time",
+    "Agent_name",
+    "Supervisor",
+    "Manager",
+    "Tenure Bucket",
+    "Agent Shift"
+]
+
+COLUMN_RENAME_MAP = {
+    "sub_category": "Sub-category",
+    "customer_remarks": "Customer Remarks",
+    "customer_city": "Customer_City",
+    "product_category": "Product_category",
+    "item_price": "Item_price",
+    "agent_name": "Agent_name",
+    "supervisor": "Supervisor",
+    "manager": "Manager",
+    "tenure_bucket": "Tenure Bucket",
+    "agent_shift": "Agent Shift"
+}
+
 class CSATInput(BaseModel):
     channel_name: str
     category: str
     sub_category: str
+    customer_remarks: str
+    customer_city: str
+    product_category: str
+    item_price: float
+    connected_handling_time: float
     agent_name: str
     supervisor: str
     manager: str
     tenure_bucket: str
     agent_shift: str
-    item_price: float = 0.0
-    connected_handling_time: float = 0.0
-
 
 class CSATResponse(BaseModel):
     predicted_csat_score: int
     confidence: float
 
-# ----------------------------
-# Helper: Preprocess Input
-# ----------------------------
 def preprocess_input(data: dict) -> np.ndarray:
     df = pd.DataFrame([data])
+    df.rename(columns=COLUMN_RENAME_MAP, inplace=True)
 
-    # Map tenure bucket
     tenure_map = {
         "On Job Training": 0,
         "0-30": 1,
@@ -61,21 +93,25 @@ def preprocess_input(data: dict) -> np.ndarray:
         "61-90": 3,
         ">90": 4
     }
-    df["tenure_bucket"] = df["tenure_bucket"].map(tenure_map).fillna(0)
+    df["Tenure Bucket"] = df["Tenure Bucket"].map(tenure_map).fillna(0)
 
-    # Label encode categorical columns
-    for col, encoder in label_encoders.items():
+    for col in CATEGORICAL_FEATURES:
         if col in df.columns:
-            df[col] = df[col].apply(lambda x: x if x in encoder.classes_ else encoder.classes_[0])
-            df[col] = encoder.transform(df[col])
+            if col in label_encoders:
+                encoder = label_encoders[col]
+                df[col] = df[col].apply(lambda x: x if x in encoder.classes_ else encoder.classes_[0])
+                df[col] = encoder.transform(df[col])
+            else:
+                df[col] = 0
 
-    # Scale numeric data
+    try:
+        df = df[ALL_FEATURES_ORDER]
+    except KeyError as e:
+        raise ValueError(f"Missing expected feature: {e}")
+
     X = scaler.transform(df)
     return X
 
-# ----------------------------
-# Routes
-# ----------------------------
 @app.get("/")
 def home():
     return {"message": "Welcome to the CSAT Prediction API"}
@@ -89,11 +125,8 @@ def predict(input_data: CSATInput):
         confidence = float(np.max(preds[0]))
         return {"predicted_csat_score": predicted_class, "confidence": confidence}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
-# ----------------------------
-# Run server
-# ----------------------------
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
