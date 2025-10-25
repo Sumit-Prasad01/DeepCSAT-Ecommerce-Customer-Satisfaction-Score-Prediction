@@ -20,6 +20,6 @@ PROCESSED_TEST_DATA_PATH = os.path.join(PROCESSED_DIR, "processed_test.csv")
 # # Model Training
 
 ENCODER_OUTPUT_PATH = "artifacts/models/encoders.pkl"
-SCALER_PATH = "artifacts/models/scaler.pkl"
+SCALER_PATH = "artifacts/models/model_scaler.pkl"
 
 MODEL_OUTPUT_PATH = "artifacts/models/model.keras"
